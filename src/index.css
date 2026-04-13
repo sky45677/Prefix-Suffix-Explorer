@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --font-headline: "Manrope", sans-serif;
+  --font-body: "Work Sans", sans-serif;
+  --font-label: "Plus Jakarta Sans", sans-serif;
+
+  --color-primary: #bac3ff;
+  --color-primary-container: #3f51b5;
+  --color-on-primary: #08218a;
+  
+  --color-secondary: #44ddc1;
+  --color-secondary-container: #00bea4;
+  --color-on-secondary: #00382f;
+
+  --color-tertiary: #fbbc00;
+  --color-tertiary-container: #745500;
+  --color-on-tertiary: #402d00;
+
+  --color-surface: #131313;
+  --color-surface-container: #201f1f;
+  --color-surface-container-low: #1c1b1b;
+  --color-surface-container-high: #2a2a2a;
+  --color-surface-container-highest: #353534;
+  
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-variant: #c5c5d4;
+  
+  --color-outline: #8f909e;
+  --color-outline-variant: #454652;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary;
+  }
+}
+
+.glass-morphism {
+  background: rgba(53, 53, 52, 0.6);
+  backdrop-filter: blur(20px);
+}
+
+.primary-gradient {
+  background: linear-gradient(135deg, #bac3ff 0%, #3f51b5 100%);
+}
+
+.radial-glow {
+  background: radial-gradient(circle at center, rgba(186, 195, 255, 0.1) 0%, rgba(19, 19, 19, 0) 70%);
+}

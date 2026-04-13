@@ -1,0 +1,93 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: /users/{userId}
+// Fields:
+//   - displayName: string
+//   - email: string (required)
+//   - photoURL: string
+//   - quizPreferences: map
+//   - stats: map
+//
+// Collection: /users/{userId}/lexicon/{entryId}
+// Fields:
+//   - word: string (required)
+//   - definition: string (required)
+//   - morphology: string (required)
+//   - timestamp: string (required)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "tanmaydknight385@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['email']) &&
+             isValidEmail(data.email) &&
+             (!('displayName' in data) || (data.displayName is string && data.displayName.size() < 100)) &&
+             (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() < 500));
+    }
+
+    function isValidLexiconEntry(data) {
+      return data.keys().hasAll(['word', 'definition', 'morphology', 'timestamp']) &&
+             data.word is string && data.word.size() > 0 && data.word.size() < 100 &&
+             data.definition is string && data.definition.size() > 0 && data.definition.size() < 2000 &&
+             data.morphology is string && data.morphology.size() > 0 && data.morphology.size() < 500 &&
+             data.timestamp is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      // Users can only read their own profile (contains PII like email)
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Users can create their own profile on first sign-in
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      
+      // Users can update their own profile, but cannot change their role to admin
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
+                    (!('role' in request.resource.data) || request.resource.data.role == resource.data.role || isAdmin());
+      
+      allow delete: if isAdmin();
+
+      match /lexicon/{entryId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && isValidLexiconEntry(request.resource.data);
+        allow update: if isOwner(userId) && isValidLexiconEntry(request.resource.data);
+        allow delete: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
