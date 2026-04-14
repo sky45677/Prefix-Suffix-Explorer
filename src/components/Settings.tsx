@@ -1,45 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Settings as SettingsIcon, Save, User, Shield, Bell } from 'lucide-react';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../firebase';
-import { useAuth } from '../AuthContext';
 
 export default function Settings({ showToast }: { showToast: (msg: string) => void }) {
-  const { user } = useAuth();
   const [prefs, setPrefs] = useState({
     defaultType: 'mcq',
     difficulty: 'beginner'
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    const userRef = doc(db, 'users', user.uid);
-    getDoc(userRef).then(docSnap => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.quizPreferences) {
-          setPrefs(data.quizPreferences);
-        }
-      }
-    });
-  }, [user]);
-
-  const handleSave = async () => {
-    if (!user) return;
+  const handleSave = () => {
     setIsSaving(true);
-    try {
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        quizPreferences: prefs
-      });
+    // Simulate save
+    setTimeout(() => {
       showToast('Preferences saved successfully!');
-    } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `users/${user.uid}`);
-    } finally {
       setIsSaving(false);
-    }
+    }, 500);
   };
 
   return (

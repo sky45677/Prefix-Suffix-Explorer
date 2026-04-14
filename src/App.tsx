@@ -3,13 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { collection, onSnapshot, query, addDoc, deleteDoc, doc, setDoc, getDoc } from 'firebase/firestore';
 import Layout from './components/Layout';
-import SignIn from './components/SignIn';
-import { AuthProvider, useAuth } from './AuthContext';
-import { db, handleFirestoreError, OperationType } from './firebase';
 import { Screen, LexiconEntry } from './types';
 
 // Lazy load screens for performance
@@ -20,87 +16,30 @@ const Dashboard = lazy(() => import('./components/Dashboard'));
 const Library = lazy(() => import('./components/Library'));
 const Settings = lazy(() => import('./components/Settings'));
 
-function AppContent() {
-  const { user, loading, logout } = useAuth();
+export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('WordBuilder');
   const [lexicon, setLexicon] = useState<LexiconEntry[]>([]);
   const [toast, setToast] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!user) {
-      setLexicon([]);
-      return;
-    }
-
-    const lexiconRef = collection(db, 'users', user.uid, 'lexicon');
-    const q = query(lexiconRef);
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const entries = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as LexiconEntry[];
-      setLexicon(entries);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, `users/${user.uid}/lexicon`);
-    });
-
-    const userRef = doc(db, 'users', user.uid);
-    getDoc(userRef).then(docSnap => {
-      if (!docSnap.exists()) {
-        setDoc(userRef, {
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          stats: { xp: 0, streak: 0, level: 1 },
-          quizPreferences: { defaultType: 'mcq', difficulty: 'beginner' }
-        }).catch(err => handleFirestoreError(err, OperationType.WRITE, `users/${user.uid}`));
-      }
-    });
-
-    return unsubscribe;
-  }, [user]);
 
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   };
 
-  const addToLexicon = async (entry: Omit<LexiconEntry, 'id' | 'timestamp'>) => {
-    if (!user) return;
-    try {
-      const lexiconRef = collection(db, 'users', user.uid, 'lexicon');
-      await addDoc(lexiconRef, {
-        ...entry,
-        timestamp: new Date().toISOString()
-      });
-      showToast(`Added "${entry.word}" to Lexicon!`);
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, `users/${user.uid}/lexicon`);
-    }
+  const addToLexicon = (entry: Omit<LexiconEntry, 'id' | 'timestamp'>) => {
+    const newEntry: LexiconEntry = {
+      ...entry,
+      id: Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toLocaleDateString()
+    };
+    setLexicon(prev => [newEntry, ...prev]);
+    showToast(`Added "${entry.word}" to Lexicon!`);
   };
 
-  const deleteFromLexicon = async (id: string) => {
-    if (!user) return;
-    try {
-      await deleteDoc(doc(db, 'users', user.uid, 'lexicon', id));
-      showToast('Removed from Lexicon');
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `users/${user.uid}/lexicon/${id}`);
-    }
+  const deleteFromLexicon = (id: string) => {
+    setLexicon(prev => prev.filter(entry => entry.id !== id));
+    showToast('Removed from Lexicon');
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <SignIn />;
-  }
 
   const renderScreen = () => {
     return (
@@ -160,13 +99,5 @@ function AppContent() {
         )}
       </AnimatePresence>
     </Layout>
-  );
-}
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
   );
 }

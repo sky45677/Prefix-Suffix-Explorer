@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { Screen } from '../types';
 import AIAssistant from './AIAssistant';
-import { useAuth } from '../AuthContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,8 +17,6 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, currentScreen, setScreen, showToast }: LayoutProps & { showToast: (msg: string) => void }) {
-  const { user, logout } = useAuth();
-
   return (
     <div className="min-h-screen bg-surface text-on-surface font-body">
       {/* Header */}
@@ -66,25 +63,14 @@ export default function Layout({ children, currentScreen, setScreen, showToast }
               Teacher Mode
             </button>
             
-            <div className="flex items-center space-x-3 pl-6 border-l border-outline-variant/20">
-              <div className="text-right hidden sm:block">
-                <p className="font-label text-[10px] font-bold text-on-surface leading-none mb-1">{user?.displayName || 'Scholar'}</p>
-                <button 
-                  onClick={logout}
-                  className="font-label text-[9px] uppercase tracking-widest text-on-surface-variant hover:text-error transition-colors flex items-center justify-end"
-                >
-                  Logout <LogOut size={10} className="ml-1" />
-                </button>
-              </div>
-              <div className="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
-                <img 
-                  src={user?.photoURL || "https://picsum.photos/seed/student/100/100"} 
-                  alt="Avatar" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                />
-              </div>
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
+              <img 
+                src="https://picsum.photos/seed/student/100/100" 
+                alt="Avatar" 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+                loading="lazy"
+              />
             </div>
           </div>
         </nav>
