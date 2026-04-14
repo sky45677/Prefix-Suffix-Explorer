@@ -259,6 +259,7 @@ export default function WordBuilder({ onAdd, setScreen }: { onAdd: (entry: any) 
                 alt="Encyclopedia" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
+                loading="lazy"
               />
             </div>
           </div>

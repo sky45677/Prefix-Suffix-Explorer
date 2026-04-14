@@ -3,20 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { collection, onSnapshot, query, addDoc, deleteDoc, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot, query, addDoc, deleteDoc, doc, setDoc, getDoc } from 'firebase/firestore';
 import Layout from './components/Layout';
-import WordBuilder from './components/WordBuilder';
-import Quiz from './components/Quiz';
-import WordTree from './components/WordTree';
-import Dashboard from './components/Dashboard';
-import Library from './components/Library';
-import Settings from './components/Settings';
 import SignIn from './components/SignIn';
 import { AuthProvider, useAuth } from './AuthContext';
 import { db, handleFirestoreError, OperationType } from './firebase';
 import { Screen, LexiconEntry } from './types';
+
+// Lazy load screens for performance
+const WordBuilder = lazy(() => import('./components/WordBuilder'));
+const Quiz = lazy(() => import('./components/Quiz'));
+const WordTree = lazy(() => import('./components/WordTree'));
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const Library = lazy(() => import('./components/Library'));
+const Settings = lazy(() => import('./components/Settings'));
 
 function AppContent() {
   const { user, loading, logout } = useAuth();
@@ -43,7 +45,6 @@ function AppContent() {
       handleFirestoreError(error, OperationType.GET, `users/${user.uid}/lexicon`);
     });
 
-    // Ensure user document exists
     const userRef = doc(db, 'users', user.uid);
     getDoc(userRef).then(docSnap => {
       if (!docSnap.exists()) {
@@ -67,7 +68,6 @@ function AppContent() {
 
   const addToLexicon = async (entry: Omit<LexiconEntry, 'id' | 'timestamp'>) => {
     if (!user) return;
-    
     try {
       const lexiconRef = collection(db, 'users', user.uid, 'lexicon');
       await addDoc(lexiconRef, {
@@ -93,11 +93,7 @@ function AppContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
-        />
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -107,22 +103,32 @@ function AppContent() {
   }
 
   const renderScreen = () => {
-    switch (currentScreen) {
-      case 'WordBuilder':
-        return <WordBuilder onAdd={addToLexicon} setScreen={setCurrentScreen} />;
-      case 'Quiz':
-        return <Quiz onAdd={addToLexicon} />;
-      case 'WordTree':
-        return <WordTree onAdd={addToLexicon} />;
-      case 'Dashboard':
-        return <Dashboard showToast={showToast} />;
-      case 'Library':
-        return <Library lexicon={lexicon} onDelete={deleteFromLexicon} />;
-      case 'Settings':
-        return <Settings showToast={showToast} />;
-      default:
-        return <WordBuilder onAdd={addToLexicon} setScreen={setCurrentScreen} />;
-    }
+    return (
+      <Suspense fallback={
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      }>
+        {(() => {
+          switch (currentScreen) {
+            case 'WordBuilder':
+              return <WordBuilder onAdd={addToLexicon} setScreen={setCurrentScreen} />;
+            case 'Quiz':
+              return <Quiz onAdd={addToLexicon} />;
+            case 'WordTree':
+              return <WordTree onAdd={addToLexicon} />;
+            case 'Dashboard':
+              return <Dashboard showToast={showToast} />;
+            case 'Library':
+              return <Library lexicon={lexicon} onDelete={deleteFromLexicon} />;
+            case 'Settings':
+              return <Settings showToast={showToast} />;
+            default:
+              return <WordBuilder onAdd={addToLexicon} setScreen={setCurrentScreen} />;
+          }
+        })()}
+      </Suspense>
+    );
   };
 
   return (
@@ -130,10 +136,11 @@ function AppContent() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentScreen}
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -10 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="gpu-accelerated optimize-layout"
         >
           {renderScreen()}
         </motion.div>

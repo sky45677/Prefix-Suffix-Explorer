@@ -86,45 +86,33 @@ export default function WordTree({ onAdd }: { onAdd: (entry: any) => void }) {
               <span className="font-headline font-extrabold text-2xl tracking-tighter text-on-surface">struct</span>
             </div>
             
-            {/* Connection Lines (SVG) */}
+            {/* Connection Lines (SVG) - Simplified for performance */}
             <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] pointer-events-none -z-10 overflow-visible">
-              <motion.path 
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
+              <path 
                 d="M 400 300 Q 400 150 250 150" 
                 fill="transparent" 
-                opacity="0.4" 
+                opacity="0.2" 
                 stroke="url(#grad1)" 
                 strokeWidth="2" 
               />
-              <motion.path 
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+              <path 
                 d="M 400 300 Q 400 450 250 450" 
                 fill="transparent" 
-                opacity="0.4" 
+                opacity="0.2" 
                 stroke="url(#grad1)" 
                 strokeWidth="2" 
               />
-              <motion.path 
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut", delay: 0.4 }}
+              <path 
                 d="M 400 300 Q 550 150 700 150" 
                 fill="transparent" 
-                opacity="0.4" 
+                opacity="0.2" 
                 stroke="url(#grad1)" 
                 strokeWidth="2" 
               />
-              <motion.path 
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut", delay: 0.6 }}
+              <path 
                 d="M 400 300 Q 550 450 700 450" 
                 fill="transparent" 
-                opacity="0.4" 
+                opacity="0.2" 
                 stroke="url(#grad1)" 
                 strokeWidth="2" 
               />
@@ -137,13 +125,13 @@ export default function WordTree({ onAdd }: { onAdd: (entry: any) => void }) {
             </svg>
           </motion.div>
 
-          {/* Word Nodes */}
+          {/* Word Nodes - Simplified motion */}
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
             onClick={() => handleNodeClick('construct', 'con-', 'To build or erect something, typically a large structure or a complex system of ideas.')}
-            className={`absolute top-[20%] left-[15%] group cursor-pointer transition-all duration-300 hover:scale-105 ${selectedWord.word === 'construct' ? 'scale-110 ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
+            className={`absolute top-[20%] left-[15%] group cursor-pointer transition-all duration-200 hover:scale-105 ${selectedWord.word === 'construct' ? 'scale-110 ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
           >
             <div className="bg-surface-container-high p-4 rounded-xl border-l-2 border-secondary shadow-lg">
               <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Prefix: con-</p>
@@ -152,11 +140,11 @@ export default function WordTree({ onAdd }: { onAdd: (entry: any) => void }) {
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
             onClick={() => handleNodeClick('destruct', 'de-', 'To cause much damage to something; to destroy.')}
-            className={`absolute bottom-[20%] left-[15%] group cursor-pointer transition-all duration-300 hover:scale-105 ${selectedWord.word === 'destruct' ? 'scale-110 ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
+            className={`absolute bottom-[20%] left-[15%] group cursor-pointer transition-all duration-200 hover:scale-105 ${selectedWord.word === 'destruct' ? 'scale-110 ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
           >
             <div className="bg-surface-container-high p-4 rounded-xl border-l-2 border-secondary shadow-lg">
               <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Prefix: de-</p>
@@ -165,11 +153,11 @@ export default function WordTree({ onAdd }: { onAdd: (entry: any) => void }) {
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.4 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
             onClick={() => handleNodeClick('infrastructure', 'infra-', 'The basic physical and organizational structures and facilities needed for the operation of a society.')}
-            className={`absolute top-[20%] right-[15%] group cursor-pointer transition-all duration-300 hover:scale-105 ${selectedWord.word === 'infrastructure' ? 'scale-110 ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
+            className={`absolute top-[20%] right-[15%] group cursor-pointer transition-all duration-200 hover:scale-105 ${selectedWord.word === 'infrastructure' ? 'scale-110 ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
           >
             <div className="bg-surface-container-high p-4 rounded-xl border-l-2 border-secondary shadow-lg">
               <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Hybrid</p>
@@ -178,11 +166,11 @@ export default function WordTree({ onAdd }: { onAdd: (entry: any) => void }) {
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.6 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
             onClick={() => handleNodeClick('structural', '-al', 'Relating to the arrangement of and relations between the parts or elements of something complex.')}
-            className={`absolute bottom-[20%] right-[15%] group cursor-pointer transition-all duration-300 hover:scale-105 ${selectedWord.word === 'structural' ? 'scale-110 ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
+            className={`absolute bottom-[20%] right-[15%] group cursor-pointer transition-all duration-200 hover:scale-105 ${selectedWord.word === 'structural' ? 'scale-110 ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
           >
             <div className="bg-surface-container-high p-4 rounded-xl border-l-2 border-secondary shadow-lg">
               <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Suffix: -al</p>

@@ -23,7 +23,7 @@ export default function Layout({ children, currentScreen, setScreen, showToast }
   return (
     <div className="min-h-screen bg-surface text-on-surface font-body">
       {/* Header */}
-      <header className="fixed top-0 left-0 w-full z-50 bg-surface-container-low border-none h-20">
+      <header className="fixed top-0 left-0 w-full z-50 bg-surface-container-low border-none h-20 gpu-accelerated">
         <nav className="flex justify-between items-center px-8 h-full w-full max-w-screen-2xl mx-auto">
           <div className="text-2xl font-bold tracking-tight text-primary font-headline cursor-pointer" onClick={() => setScreen('WordBuilder')}>
             MorphoMind
@@ -82,6 +82,7 @@ export default function Layout({ children, currentScreen, setScreen, showToast }
                   alt="Avatar" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -90,7 +91,7 @@ export default function Layout({ children, currentScreen, setScreen, showToast }
       </header>
 
       {/* Sidebar */}
-      <aside className="fixed left-0 top-20 flex flex-col w-64 p-6 space-y-8 bg-surface-container-low h-[calc(100vh-5rem)] rounded-r-xl shadow-[32px_0_32px_rgba(229,226,225,0.06)] z-40 hidden xl:flex">
+      <aside className="fixed left-0 top-20 flex flex-col w-64 p-6 space-y-8 bg-surface-container-low h-[calc(100vh-5rem)] rounded-r-xl shadow-[32px_0_32px_rgba(229,226,225,0.06)] z-40 hidden xl:flex gpu-accelerated">
         <div>
           <h3 className="font-headline text-lg font-bold">Learning Progress</h3>
           <p className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant opacity-60">Academic Status</p>
